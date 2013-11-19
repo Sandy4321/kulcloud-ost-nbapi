@@ -1,5 +1,5 @@
 The author : Seok Hwan Kong (seokhwan.kong@kulcloud.net)
-This is the Kulcloud nbapi project.
+This is the Kulcloud nbapi project for NFV platform
 
 Environment Set up :
 ./run_tests.sh -V -f
