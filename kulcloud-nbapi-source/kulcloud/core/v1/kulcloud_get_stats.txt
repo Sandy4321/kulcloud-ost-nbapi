@@ -1,0 +1,38 @@
+# get the single flow informations
+
+import mul_nbapi
+fl = mul_nbapi.nbapi_flow_make_flow("10.0.0.1", None,1,0,0x0800,0,0,None,None,0,0,0)
+a1 = mul_nbapi.nbapi_make_action_output(2);
+action_list = [a1]
+wildcards = mul_nbapi.OFPFW_ALL & ~(mul_nbapi.OFPFW_NW_SRC_MASK) & ~(mul_nbapi.OFPFW_DL_TYPE)
+prio = 0
+mul_nbapi.add_static_flow(1,fl,wildcards, prio, action_list)
+
+
+stats = mul_nbapi.get_flow_statistics(1, fl, wildcards, 2, prio)
+print mul_nbapi.nbapi_parse_bps_to_str(stats.bps)
+print mul_nbapi.nbapi_parse_bps_to_str(stats.pps)
+
+struct c_ofp_flow_info {
+    struct ofp_header   header;
+    uint64_t            datapath_id;
+    uint32_t            sw_alias;
+
+    struct flow         flow; 
+    uint8_t             flags;
+    uint8_t             command;
+    uint16_t            priority;
+    uint32_t            wildcards;
+    uint16_t            itimeo;
+    uint16_t            htimeo;
+    uint16_t            mod_flags;
+    uint16_t            oport;
+    uint32_t            buffer_id;
+    uint32_tpad;
+    uint64_t            byte_count;
+    uint64_t            packet_count;
+#define C_FL_XPS_SZ 32
+    uint8_t             bps[C_FL_XPS_SZ];
+    uint8_t             pps[C_FL_XPS_SZ];
+    struct ofp_action_header actions[0];
+};
