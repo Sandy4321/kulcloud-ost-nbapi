@@ -2472,3 +2472,53 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
             
         con.close()
         return result
+    
+    
+    # TODO: NFVTopologyManager API    
+    def index_nfvtopo(self, conf):        
+        return 
+    
+    def create_nfvtopo(self, conf, body):
+        return
+    
+    def update_nfvtopo(self, conf, name, body):
+        return
+    
+    def delete_nfvtopo(self, conf, name):
+        return
+    
+    def show_nfvtopo(self, conf, name):
+        return
+    
+    # TODO: NFVGroupManager API    
+    def index_nfvgroup(self, conf):        
+        return 
+    
+    def create_nfvgroup(self, conf, body):
+        return
+    
+    def update_nfvgroup(self, conf, name, body):
+        return
+    
+    def delete_nfvgroup(self, conf, name):
+        return
+    
+    def show_nfvgroup(self, conf, name):
+        return
+    
+    # TODO: ServiceChainDefaultRuleManager API    
+    def get_servicechaindefaultrule(self, conf):        
+        return 
+    
+    def create_servicechaindefaultrule(self, conf, body):
+        return
+    
+    def update_servicechaindefaultrule(self, conf, name, body):
+        return
+    
+    def delete_servicechaindefaultrule(self, conf, name):
+        return
+    
+    def servicechaindefaultrule_get_index(self, conf, name):
+        return
+        

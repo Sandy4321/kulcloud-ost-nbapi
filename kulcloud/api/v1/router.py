@@ -28,16 +28,21 @@ from . import FlowtableManager
 from . import FlowManager
 from . import StatsManager
 from . import StatsFlowManager
-from . import TopologyManager
 from . import SwitchManager
 from . import PortManager
 from . import LinkManager
 from . import RouteManager
 from . import PathManager
-from . import ServiceChainManager
-from . import ServiceManager
 from . import SADBManager
 from . import NFVDBManager
+
+""" Kulcloud NFV Solution Manager """
+from . import ServiceManager
+from . import ServiceChainManager
+from . import TopologyManager
+from . import NFVTopologyManager
+from . import NFVGroupManager
+from . import ServiceChainDefaultRuleManager
 
 from kulcloud.core import api as core_api
 
@@ -66,24 +71,29 @@ class API(wsgi.Router):
         Fabric_resource = FabricManager.create_resource(self.conf)
         Tenant_resource = TenantManager.create_resource(self.conf)
         Network_resource = NetworkManager.create_resource(self.conf)
-        Host_resource = HostManager.create_resource(self.conf)
-        
+        Host_resource = HostManager.create_resource(self.conf)        
         Flowtable_resource = FlowtableManager.create_resource(self.conf)
         Flow_resource = FlowManager.create_resource(self.conf)
         Stats_resource = StatsManager.create_resource(self.conf)
-        Stats_flow_resource = StatsFlowManager.create_resource(self.conf)
-        Topology_resource = TopologyManager.create_resource(self.conf)
+        Stats_flow_resource = StatsFlowManager.create_resource(self.conf)        
         Switch_resource = SwitchManager.create_resource(self.conf)
         Port_resource = PortManager.create_resource(self.conf)
         Link_resource = LinkManager.create_resource(self.conf)
         Route_resource = RouteManager.create_resource(self.conf)
-        Path_resource = PathManager.create_resource(self.conf)
-        ServiceChain_resource = ServiceChainManager.create_resource(self.conf)
-        Service_resource = ServiceManager.create_resource(self.conf)
+        Path_resource = PathManager.create_resource(self.conf)       
         SADB_resource = SADBManager.create_resource(self.conf)
         NFVDB_resource = NFVDBManager.create_resource(self.conf)
         
         
+        """ Kulcloud NFV Solution Manager """
+        Topology_resource = TopologyManager.create_resource(self.conf)
+        ServiceChain_resource = ServiceChainManager.create_resource(self.conf)        
+        Service_resource = ServiceManager.create_resource(self.conf)
+        NFVTopology_resource = NFVTopologyManager.create_resource(self.conf)
+        NFVGroup_resource = NFVGroupManager.create_resource(self.conf)
+        ServiceChainDefaultRule_resource = ServiceChainDefaultRuleManager.create_resource(self.conf)
+
+
         """ Fabric API """
         Fabric_collection = version_mapper.collection('fabric', 'fabric',
                 controller=Fabric_resource, member_prefix="/",
@@ -295,15 +305,9 @@ class API(wsgi.Router):
                             controller=SADB_resource,
                             action="get_vm_threshold",
                             conditions={"method" : ["GET"]})
-        """
-        mapper.connect("/algorithms",
-                       controller=device_resource,
-                       action="show_algorithms",
-                       conditions={'method': ["GET"]})
-        mapper.connect("/protocols",
-                       controller=device_resource,
-                       action="show_protocols",
-                       conditions={'method': ["GET"]})
-        """
+        
+        
+        
+        # TODO : Define NFVTopologyManager API URI 
 
         super(API, self).__init__(mapper)

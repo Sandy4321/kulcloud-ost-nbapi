@@ -178,31 +178,6 @@ def stats_port_get_index(conf, version, dpid, port_no):
     stats_list = mul_intf[version].get_stat_port(conf, dpid, port_no)
     return stats_list
 
-""" Topology Manager """
-
-def topology_get_index(conf, version):
-    return NOT_SUPPORTED
-
-def topology_get_data(conf, version, topology_id):
-    return NOT_SUPPORTED
-
-
-def topology_show_details(conf, version, topology_id):
-    return NOT_SUPPORTED
-
-
-def create_topology(conf, version, params):
-    return NOT_SUPPORTED
-
-
-@asynchronous
-def update_topology(conf, version, topology_id, topology_body):
-    return NOT_SUPPORTED
-   
-
-def delete_topology(conf, version, topology_id):
-    return NOT_SUPPORTED
-
 
 """ Flow Manager """
 def flow_unpack_extra(flow):
@@ -553,31 +528,7 @@ def update_host(conf, version, tenant_id, network_id, host_id, body):
     """ 
     return {'host_id' : 1} 
 
-""" ServiceChain Manager"""
-def servicech_get_index(conf, version):
-    return NOT_SUPPORTED   
 
-def create_servicech(conf, version, params):
-    result = mul_intf[version].create_servicech(conf, params)
-    return result
-
-def delete_servicech(conf, version, phone_num):
-    result = mul_intf[version].delete_servicech(conf, phone_num)
-    return result
- 
-def servicech_get_data(conf, version, phone_num):
-    #if phone_num == "ALL":
-        #result = mul_intf[version].get_all_servicech(conf)
-    #else:
-    result = mul_intf[version].get_servicech(conf, phone_num)
-    return result
-
-def servicech_show_details(conf, version, phone_num):
-    return NOT_SUPPORTED
-
-def update_servicech(conf, version, phone_num, body):
-    result = mul_intf[version].update_servicech(conf, phone_num, body)
-    return result
 
 """ Default Rule """
 def create_default_rule(conf, version, body):
@@ -739,3 +690,111 @@ def get_vm_map(conf, version):
 def get_vm_threshold(conf, version):
     result = mul_intf[version].get_vm_threshold(conf)
     return result
+
+
+""" Kulcloud-NFV-NBAPI START """
+
+
+"""NFVTopologyManager api - From NFVTopologyMgr"""
+def create_nfvtopo(conf, version, body):
+    result = mul_intf[version].create_nfvtopo(conf, body)
+    return result
+
+def index_nfvtopo(conf, version):
+    result = mul_intf[version].index_nfvtopo(conf)
+    return result
+
+def update_nfvtopo(conf, version, name, body):
+    result = mul_intf[version].update_nfvtopo(conf, name, body)
+    return result 
+
+def show_nfvtopo(conf, version, name):
+    result = mul_intf[version].show_nfvtopo(conf, name)
+    return result
+
+def delete_nfvtopo(conf, version, name):
+    result = mul_intf[version].delete_nfvtopo(conf, name)
+    return result
+
+"""NFVGroupManager api - From NFVGroupMgr"""
+def create_nfvgroup(conf, version, body):
+    result = mul_intf[version].create_nfvgroup(conf, body)
+    return result
+
+def index_nfvgroup(conf, version):
+    result = mul_intf[version].index_nfvgroup(conf)
+    return result
+
+def update_nfvgroup(conf, version, name, body):
+    result = mul_intf[version].update_nfvgroup(conf, name, body)
+    return result 
+
+def show_nfvgroup(conf, version, name):
+    result = mul_intf[version].show_nfvgroup(conf, name)
+    return result
+
+def delete_nfvgroup(conf, version, name):
+    result = mul_intf[version].delete_nfvgroup(conf, name)
+    return result
+
+""" ServiceChain Manager"""
+def index_servicech(conf, version):
+    result = mul_intf[version].index_servicech(conf)
+    return result   
+
+def create_servicech(conf, version, params):
+    result = mul_intf[version].create_servicech(conf, params)
+    return result
+
+def delete_servicech(conf, version, name):
+    result = mul_intf[version].delete_servicech(conf, name)
+    return result
+ 
+def show_servicech(conf, version, name):
+    result = mul_intf[version].show_servicech(conf, name)
+    return result
+
+def update_servicech(conf, version, phone_num, body):
+    result = mul_intf[version].update_servicech(conf, phone_num, body)
+    return result
+
+"""ServiceChainDefaultRuleManager api - From ServiceChainDefaultRuleMgr"""
+def create_servicechaindefaultrule(conf, version, body):
+    result = mul_intf[version].create_servicechaindefaultrule(conf, body)
+    return result
+
+def index_servicechaindefaultrule(conf, version):
+    result = mul_intf[version].index_servicechaindefaultrule(conf)
+    return result
+
+def update_servicechaindefaultrule(conf, version, name, body):
+    result = mul_intf[version].update_servicechaindefaultrule(conf, name, body)
+    return result 
+
+def show_servicechaindefaultrule(conf, version, name):
+    result = mul_intf[version].show_servicechaindefaultrule(conf, name)
+    return result
+
+def delete_servicechaindefaultrule(conf, version, name):
+    result = mul_intf[version].delete_servicechaindefaultrule(conf, name)
+    return result
+
+
+"""TopologyManager api - From TopologyMgr"""
+def create_topology(conf, version, params):
+    return NOT_SUPPORTED
+
+def index_topology(conf, version):
+    result = mul_intf[version].index_topology(conf)
+    return result
+
+@asynchronous
+def update_topology(conf, version, name, topology_body):
+    return NOT_SUPPORTED
+
+def show_topology(conf, version, name):
+    result = mul_intf[version].show_topology(conf, name)
+    return result  
+
+def delete_topology(conf, version, name):
+    return NOT_SUPPORTED

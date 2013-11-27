@@ -725,179 +725,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
             print "[ERROR] during Flow add"
             return
   
-    def create_servicech(self, conf, params):
-        """ Work from Chan""" 
-        cur = None
-        try:
-            con = mdb.connect('localhost', 'root', 'of#123', 'skdemo2')
-            cur = con.cursor(mdb.cursors.DictCursor)
-        except:
-            print "[ERROR] DB Connection Fail"
-            pass
 
-        """
-        params parsing
-        """
-        user_id = 0
-        user_ip = params["ip"]
-        user_phone_num = params["mdn"]
-        user_service_level = params["service_level"]
-
-        #define result form
-        result = {"ip":user_ip, "mdn":user_phone_num, "service_level":user_service_level, "services":[], "message":""}
-
-        #get user id
-        #cur.execute("SELECT userid FROM user WHERE userip = %s AND phone_num = %s", (user_ip, user_phone_num))
-        cur.execute("SELECT * FROM user WHERE userip = %s", (user_ip))
-        row = cur.fetchone()
-        if not row:
-            #insert user db
-            cur.execute("SELECT userid FROM user ORDER BY userid DESC LIMIT 1")
-            row1 = cur.fetchone()
-            user_id = row1["userid"] + 1
-
-            cur.execute("INSERT INTO user VALUES(%s, %s, %s, %s, %s)", (user_id, user_ip, user_phone_num, user_service_level, 1))
-            con.commit()
-        else:
-            print "[WARNING] already registered"
-            user_id = row["userid"]
-
-            if row["phone_num"] != user_phone_num:
-                cur.execute("SELECT * FROM user WHERE phone_num = %s", user_phone_num)
-                temp = cur.fetchone()
-                if not temp:
-                    cur.execute("UPDATE user SET phone_num = %s WHERE userip = %s", (user_phone_num, user_ip))
-                    con.commit()
-                else:
-                    print "[ERROR] already registered phone_num"
-                    return {"message" : "FAIL"}
-
-            if row['service_level'] != user_service_level:
-                print "[WARING] update user service level"
-                cur.execute("UPDATE user SET service_level = %s WHERE userid = %s", (user_service_level, user_id))
-            #result["message"] = "FAIL"
-            #return result
-            cur.execute("UPDATE user SET active = 1 WHERE userid = %s", user_id)
-            con.commit()
-        
-        #cur.execute("SELECT * FROM sa")
-        #rows = cur.fetchall()
-
-        """ 2013-10-22 """
-        if row:
-            cur.execute("SELECT chain_id, service_id FROM ippool WHERE user_id = %s", row["user_id"])
-        else:
-            cur.execute("SELECT chain_id, service_id FROM ippool WHERE user_id IN (SELECT userid FROM user WHERE userip = %s)", self.default_user_ip)
-        
-        default_chain_list = cur.fetchall()  
-
-        for chain in default_chain_list:
-        #for row in rows:
-            cur.execute("SELECT * FROM servicechainlog WHERE chain_id = %s", chain["chain_id"])
-            default_list = cur.fetchall()
-            nfv_list = {"nfv_list" : []}
-            if not default_list and not row:
-                self.create_default_rule(conf, "ALL", {"nfv_list" : ["NAT"]})
-                nfv_list["nfv_list"].append("NAT")
-            elif not default_list:
-                cur.execute("SELECT * FROM servicechainlog WHERE chain_id IN (SELECT chain_id FROM ippool WHERE user_id IN (SELECT userid FROM user WHERE userip = %s))", self.default_user_ip)
-                default_list = cur.fetchall()
-                for default in default_list:
-                    nfv_list["nfv_list"].append(default["nfv_name"])
-            else:
-                #pdb.set_trace()
-                for default in default_list:
-                    nfv_list["nfv_list"].append(default["nfv_name"])
-            
-            cur.execute("SELECT * FROM sa WHERE service_id = %s", chain["service_id"])
-            service = cur.fetchone()
-            node = self.create_service(conf, user_phone_num, service["service_type"], nfv_list)
-            if node["message"] != "SUCCESS":
-                print "[ERROR] user service create fail"
-                result["message"] = "FAIL"
-                return result
-
-            result["services"].append(node["services"])
-        
-        result["message"] = "SUCCESS"
-        return result
-
-
-
-    def delete_servicech(self, conf, phone_num):
-        #print "[WARNING] delete user?!"
-        #print self, conf, phone_num
-        """ 2013-09-12 Work from Backguyn """
-
-        result = {"message" : "SUCCESS"}
-        #return result
-
-        try:
-            con = mdb.connect('localhost', 'root', 'of#123', 'skdemo2')
-            cur = con.cursor(mdb.cursors.DictCursor)
-        except:
-            print "[ERROR] DB Connection Fail"
-            pass
-
-        cur.execute("SELECT * FROM user WHERE phone_num = %s", phone_num)
-        user = cur.fetchone()
-        
-        if not user:
-            print "[ERROR] This user is not on the DB"
-            result["message"] = "E_MSG5"
-            return result
-       
-        cur.execute("UPDATE user SET active = 0 WHERE phone_num = %s", phone_num)
-        con.commit()
-
-        cur.close()
-        con.close()
-
-        return result
-
- 
-    def get_servicech(self, conf, phone_num):
-        """ Work from Chan"""
-        try:
-            con = mdb.connect('localhost', 'root', 'of#123', 'skdemo2')
-            cur = con.cursor(mdb.cursors.DictCursor)
-        except:
-            print "[ERROR] DB Connection Fail"
-            pass
-
-        """
-        params parsing
-        """
-        user_phone_num = phone_num
-        #define result form
-        result = {"ip":"", "mdn":user_phone_num, "service_level":"", "services":[], "message":""}
-
-        cur.execute("SELECT * FROM user WHERE phone_num = %s", user_phone_num)
-        row = cur.fetchone()
-
-        if not row:
-            print "[ERROR] can not find user"
-            result["message"] = "E_MSG5"
-            return result
-        
-        result["ip"] = row["userip"]
-        result["service_level"] = row["service_level"]
-        user_id = row["userid"]
-        
-        #cur.execute("SELECT * FROM servicechainlog as a, ippool as b, sa as c WHERE a.chain_id = b.chain_id AND b.service_id = c.service_id AND b.user_id = %s AND a.nfv_order = 0 ORDER BY a.chain_id, a.nfv_order", user_id)
-        cur.execute("SELECT * FROM ippool as a, sa as b WHERE a.service_id = b.service_id AND a.user_id = %s ORDER BY a.chain_id", user_id)
-        rows = cur.fetchall()
-      
-        for row in rows:
-            result["services"].append({"service_type":row["service_type"], "service_chain_id":row["chain_id"], "service_ip":row["ip"]})
-
-        #print result
-
-        result["message"] = "SUCCESS"
-        return result
-
-    def update_servicech(self, conf, phone_num, body):
-        pass  
     
     def show_service_chain_list(self, conf, service_chain_id):
         """ Work from Chan"""
@@ -3113,3 +2941,87 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
 
     def get_vm_threshold(self, conf):
         return self.vm_threshold
+    
+    """ Kulcloud-NFV-NBAPI START """
+    
+    
+    
+    # TODO: NFVTopologyManager API    
+    def index_nfvtopo(self, conf):        
+        return 
+    
+    def create_nfvtopo(self, conf, body):
+        return
+    
+    def update_nfvtopo(self, conf, name, body):
+        return
+    
+    def delete_nfvtopo(self, conf, name):
+        return
+    
+    def show_nfvtopo(self, conf, name):
+        return
+    
+    # TODO: NFVGroupManager API    
+    def index_nfvgroup(self, conf):        
+        return 
+    
+    def create_nfvgroup(self, conf, body):
+        return
+    
+    def update_nfvgroup(self, conf, name, body):
+        return
+    
+    def delete_nfvgroup(self, conf, name):
+        return
+    
+    def show_nfvgroup(self, conf, name):
+        return
+    
+    # TODO: ServiceChainManager API 
+    def index_servicech(self, conf):        
+        return
+       
+    def create_servicech(self, conf, params):
+        return 
+    
+    def update_servicech(self, conf, name, body):
+        return  
+
+    def delete_servicech(self, conf, name):
+        return 
+ 
+    def show_servicech(self, conf, name):
+        return     
+    
+    # TODO: ServiceChainDefaultRuleManager API    
+    def index_servicechaindefaultrule(self, conf):        
+        return 
+    
+    def create_servicechaindefaultrule(self, conf, body):
+        return
+    
+    def update_servicechaindefaultrule(self, conf, name, body):
+        return
+    
+    def delete_servicechaindefaultrule(self, conf, name):
+        return
+    
+    def show_servicechaindefaultrule(self, conf, name):
+        return
+    
+    # TODO: TopologyManager API    
+    def index_topology(self, conf):        
+        return 
+    
+    def create_topology(self, conf, body):
+        return
+    
+    def update_topology(self, conf, name, body):
+        return
+    
+    def delete_topology(self, conf, name):
+        return
+    
+    def show_topology(self, conf, name):
+        return

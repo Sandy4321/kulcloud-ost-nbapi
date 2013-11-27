@@ -41,11 +41,11 @@ class Controller(object):
     @utils.verify_version
     def index(self, req, version):
         LOG.debug("[ServiceChain api] Show list of switches. Request: %s", req)
-        result = core_api.servicech_get_index(self.conf, version)
+        result = core_api.index_servicech(self.conf, version)
         return result
 
     @utils.http_success_code(202)
-#    @utils.verify_version_argument
+    @utils.verify_version_argument
     def create(self, req, version, body):
         LOG.debug("[ServiceChain api] Got create request. Request: %s", req)
         #here we need to decide which device should be used
@@ -65,19 +65,12 @@ class Controller(object):
     @utils.verify_version
     def show(self, req, version, phone_num):
         LOG.debug("[ServiceChain api] Got info request. Request: %s", req)
-	try:
-       	    result = core_api.servicech_get_data(self.conf, version, phone_num)
-	except Exception as e:
-	    raise webob.exc.HTTPBadRequest(content_type='application_json',body='There is no target switch')
+        try:
+            result = core_api.show_servicech(self.conf, version, phone_num)
+        except Exception as e:
+            raise webob.exc.HTTPBadRequest(content_type='application_json',body='There is no target switch')
         return result
 
-    """
-    @utils.verify_version
-    def details(self, req, version, phone_num):
-        LOG.debug("[ServiceChain api] Got info request. Request: %s", req)
-        result = core_api.servicech_show_details(self.conf, version, phone_num)
-        return result
-    """
 
     @utils.http_success_code(202)
     @utils.verify_version_argument
@@ -86,34 +79,7 @@ class Controller(object):
         params = self.create_schema.deserialize(body)
         result = core_api.update_servicech(self.conf, version, phone_num, params)
         return result
-    
-    
-    def show_service_chain_list(self, req, version, service_chain_id):
-        LOG.debug("[ServiceChain api] Show list of service chains. Request: %s", req)
-        result = core_api.servicech_show_service_chain_list(self.conf, version, service_chain_id)
-        return result
-        
-    def delete_service_chain_list(self, req, version, service_chain_id):
-        LOG.debug("[ServiceChain api] DELETE list of service chain. Request: %s", req)
-        result = core_api.delete_service(self.conf, version, service_chain_id)
-        return result
 
-    def show_stats_by_servicechain(self, req, version, service_chain_id):
-        LOG.debug("[ServiceChain api] Show stats of service chains. Request: %s", req)
-        result = core_api.servicech_show_statistic_service_chain(self.conf, version, service_chain_id)
-        return result
-
-    """Default rule function"""
-    """Work by Backguyn"""
-    def create_default_rule(self, req, version, body):
-        LOG.debug("[ServiceChain Default rule api] Create Default rule. Request: %s", req)
-        result = core_api.create_default_rule(self.conf, version, body)
-        return result
-
-    def get_default_rule(self, req, version):
-        LOG.debug("[ServiceChain Default rule api] Get Default rule. Request: %s", req)
-        result = core_api.get_default_rule(self.conf, version)
-        return result
 
 def create_resource(conf):
     """ServiceChManager resource factory method"""
