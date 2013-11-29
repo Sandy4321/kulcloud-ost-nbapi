@@ -1,6 +1,0 @@
-{
-	"nw_src": "10.0.0.1", 
-    "dl_type": 2048,
-	"in_port": 1,
-	"actions": [{"action": "OUTPUT", "value": 2}]
-}

@@ -1,6 +1,0 @@
-{
-    "cpu_threshold":40,
-    "cpu_duration":60,
-    "pps_threshold":100000000,
-    "pps_duration":60
-}

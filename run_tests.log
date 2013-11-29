@@ -1,3 +1,0 @@
-nose.config: INFO: Ignoring files matching ['^\\.', '^_', '^setup\\.py$']
-nose.selector: INFO: /usr/src/kulcloud-nbapi/start.sh is executable; skipped
-nose.selector: INFO: /usr/src/kulcloud-nbapi/run_tests.sh is executable; skipped
