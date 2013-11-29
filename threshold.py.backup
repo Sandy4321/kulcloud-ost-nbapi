@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+
+import sys
+import libxml2
+import pdb
+import time
+import json
+import MySQLdb as mdb
+import MySQLdb.cursors
+
+update_interval = 2.0
+duration_interval = int(update_interval)
+cpu_check_duration = dict()
+pps_check_duration = dict()
+
+try:
+    con = mdb.connect("localhost", "root", "of#123", "skdemo2", cursorclass=MySQLdb.cursors.DictCursor)
+except:
+    print "[ERROR] Failed connecting to DB :"
+    exit(1)
+
+with con as cur:
+    cur.execute("SELECT nfv_vm_id FROM nfvvm")
+    nfvvm_list = cur.fetchall()
+
+for nfvvm in nfvvm_list:
+    cpu_check_duration[nfvvm["nfv_vm_id"]] = 0
+    pps_check_duration[nfvvm["nfv_vm_id"]] = 0
+
+while True:
+    with con as cur:
+        cur.execute("SELECT c.nfv_id, b.nfv_vm_id, a.cpu_usage_threshold, a.cpu_usage_duration, a.inport_pps_threshold, a.inport_pps_duration, d.in_port_pps, d.out_port_pps, d.cpu_usage, b.active_threshold FROM nfvvmThreshold as a, nfvvm as b, nfv as c, nfvvmStatus as d WHERE a.nfv_id = b.nfv_id AND b.nfv_id = c.nfv_id AND c.type = 'virtual' AND d.nfv_vm_id = b.nfv_vm_id AND b.active = 1")
+        threshold_list = cur.fetchall()
+    
+    active_on_threshold_list = [threshold for threshold in threshold_list if threshold["active_threshold"] == 1]
+    active_off_threshold_list = [threshold for threshold in threshold_list if threshold["active_threshold"] == 0]
+   
+    for threshold in active_on_threshold_list:
+        key = threshold["nfv_vm_id"]
+        print key, " : ", threshold["cpu_usage"], " : ", threshold["cpu_usage_threshold"]
+        
+        if cpu_check_duration[key] >= threshold["cpu_usage_duration"] or pps_check_duration[key] >= threshold["inport_pps_duration"]:
+            print "[EVENT] nfvvm_id : %s = will deselectable when cpu usage drop to normal" % (threshold["nfv_vm_id"])
+            with con as cur:
+                cur.execute("UPDATE nfvvm SET active_threshold = 0 WHERE nfv_vm_id = %s", key)
+                con.commit()
+            continue
+
+        if threshold["cpu_usage"] >= threshold["cpu_usage_threshold"]:
+            print "%s nfvvm : over cpu_threshold" % (key)
+            cpu_check_duration[key] += duration_interval
+        else:
+            if cpu_check_duration[key] > 0:
+                cpu_check_duration[key] -= duration_interval
+
+        if threshold["in_port_pps"] >= threshold["inport_pps_threshold"]:
+            print "%s nfvvm : over pps_threshold" % (key)
+            pps_check_duration[key] += duration_interval
+        else:
+            if pps_check_duration[key] > 0:
+                pps_check_duration[key] -= duration_interval
+
+
+    for threshold in active_off_threshold_list:
+        key = threshold["nfv_vm_id"]
+
+        print key, " : ", threshold["cpu_usage"], " : ", threshold["cpu_usage_threshold"]
+        if threshold["cpu_usage"] <= threshold["cpu_usage_threshold"]:
+            if cpu_check_duration[key] > 0:
+                cpu_check_duration[key] -= duration_interval
+        else:
+            if cpu_check_duration[key] < threshold["cpu_usage_duration"] * 2:
+                cpu_check_duration[key] += duration_interval
+
+        if threshold["in_port_pps"] <= threshold["inport_pps_threshold"]:
+            if cpu_check_duration[key] > 0:
+                pps_check_duration[key] -= duration_interval
+        else:
+            if pps_check_duration[key] < threshold["inport_pps_duration"] * 2:
+                pps_check_duration[key] += duration_interval
+
+        if cpu_check_duration[key] < threshold["cpu_usage_duration"] and cpu_check_duration[key] < threshold["inport_pps_duration"]:
+            print "[EVENT] %s nfvvm now selectable because cpu usage droped to normal" % (key)
+            with con as cur:
+                cur.execute("UPDATE nfvvm SET active_threshold = 1 WHERE nfv_vm_id = %s", key)
+                con.commit()
+    print ""  
+    time.sleep(update_interval)
+
+
+#con.close()            
