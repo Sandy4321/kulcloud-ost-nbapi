@@ -2303,8 +2303,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
     
     """ Utility Function """
     def key_fields(self, controller_name, body):
-        return {key : body[key] for key in self.db_collection[controller_name]['keys']}
-    
+        return {key : body[key] for key in self.db_collection[controller_name]['keys']}    
     
     def get_obj_id(self, _id):
         return ObjectId(_id)
