@@ -84,3 +84,7 @@ def create_resource(conf):
     deserializer = wsgi.JSONRequestDeserializer()
     serializer = wsgi.JSONResponseSerializer()
     return wsgi.Resource(Controller(conf), deserializer, serializer)
+
+def input_validation(body):
+    #TODO : Input validation
+    return 0
