@@ -2303,7 +2303,12 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
     
     """ Utility Function """
     def key_fields(self, controller_name, body):
+<<<<<<< HEAD
         return {key : body[key] for key in self.db_collection[controller_name]['keys']}    
+=======
+        return {body[key] for key in self.db_collection[controller_name]['keys']}
+    
+>>>>>>> 7c9e6aafda72d9d2222a180ff096bb22d3601de4
     
     def get_obj_id(self, _id):
         return ObjectId(_id)
@@ -2324,7 +2329,12 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
     def mongo_db_delete_func(self, controller_name, name):
         if not self.db_alive():
             return ERROR_DB_DISCONNET 
-        return self.db[self.db_collection[controller_name]].remove({'_id':self.get_obj_id(name)}) # return message:{'connectionId','ok','err','n'}
+        body = self.db[self.db_collection[controller_name]].find_one({'_id':self.get_obj_id(name)})
+        if body is not None:
+            self.db[self.db_collection[controller_name]].remove({'_id':self.get_obj_id(name)}) # return message:{'connectionId','ok','err','n'}            
+            return body
+        else:
+            return ERROR_DB_NONEXIST     
     
     def mongo_db_create_func(self, controller_name, body):   
         if not self.db_alive():
@@ -2332,14 +2342,17 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         if self.db[self.db_collection[controller_name]].find_one(self.key_fields(controller_name, body)):
             return ERROR_DB_EXIST
         else :
-            return self.db[self.db_collection[controller_name]].insert(body)
+            body['id'] = self.str_uuid()
+            self.db[self.db_collection[controller_name]].insert(body)
+            return body['id']
         
     def mongo_db_update_func(self, controller_name, name, body):
         if not self.db_alive():
             return ERROR_DB_DISCONNET 
         
         if self.db[self.db_collection[controller_name]].find_one({'_id':self.get_obj_id(name)}):
-            return self.db[self.db_collection[controller_name]].update({'_id':self.get_obj_id(name)}, body)
+            self.db[self.db_collection[controller_name]].update({'_id':self.get_obj_id(name)}, body)
+            return body['id']
         else :
             return ERROR_DB_NONEXIST
         
@@ -2347,14 +2360,42 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
     def index_nfvtopo(self, conf):               
         return self.mongo_db_index_func(self.db_collection['NFVTopologyMgr']['name'])                        
     
-    def create_nfvtopo(self, conf, body):
-        return self.mongo_db_create_func(self, self.db_collection['NFVTopologyMgr']['name'], body)
+    def create_nfvtopo(self, conf, body):        
+        nfv_uuid = self.mongo_db_create_func(self, self.db_collection['NFVTopologyMgr']['name'], body) 
+        if nfv_uuid :
+            try:
+                mul_nbapi.NFVTopology_node_insert(body['group_id'], int(body['dpid'],0), int(body['in_port']),
+                                              int(body['out_port']), str(body['name']), 0)
+            except :
+                return {"error" : MUL_NBAPI_ERROR}
+        else :
+            return {"error" : nfv_uuid}
+        return {"nfv_uuid":nfv_uuid}
     
     def update_nfvtopo(self, conf, name, body):
-        return self.mongo_db_update_func(self, self.db_collection['NFVTopologyMgr']['name'], name, body)
+        nfv_uuid = self.mongo_db_update_func(self, self.db_collection['NFVTopologyMgr']['name'], name, body)
+        if nfv_uuid :
+            try:
+                mul_nbapi.NFVTopology_node_update(body['group_id'], int(body['dpid'],0), int(body['in_port']),
+                                              int(body['out_port']), str(body['name']), 0)
+            except :
+                return {"error" : MUL_NBAPI_ERROR}
+        else :
+            return {"error" : nfv_uuid}
+        return {"nfv_uuid":nfv_uuid}
     
     def delete_nfvtopo(self, conf, name):
-        return self.mongo_db_delete_func(self, self.db_collection['NFVTopologyMgr']['name'], name)
+        body = self.mongo_db_delete_func(self, self.db_collection['NFVTopologyMgr']['name'], name)
+        if body :
+            try:
+                mul_nbapi.NFVTopology_node_remove(int(body['dpid'],0), int(body['in_port']),
+                                                  int(body['out_port']), str(body['name']))
+            except:
+                return {"error" : MUL_NBAPI_ERROR}
+        else :
+            return {"error" : body}
+        return {"SUCCESS"}  
+            
     
     def show_nfvtopo(self, conf, name):
         return self.mongo_db_show_func(self.db_collection['NFVTopologyMgr']['name'], name)
@@ -2367,12 +2408,37 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
     
     def create_nfvgroup(self, conf, body):
         return self.mongo_db_create_func(self, self.db_collection['NFVGroupMgr']['name'], body)
+        nfv_uuid = self.mongo_db_create_func(self, self.db_collection['NFVGroupMgr']['name'], body) 
+        if nfv_uuid :
+            try:
+                mul_nbapi.NFVGroup_insert(str(body['name']))
+            except :
+                return {"error" : MUL_NBAPI_ERROR}
+        else :
+            return {"error" : nfv_uuid}
+        return {"nfv_uuid":nfv_uuid}
     
     def update_nfvgroup(self, conf, name, body):
-        return self.mongo_db_update_func(self, self.db_collection['NFVGroupMgr']['name'], name, body)
+        nfv_uuid = self.mongo_db_update_func(self, self.db_collection['NFVGroupMgr']['name'], name, body)
+        if nfv_uuid :
+            try:
+                mul_nbapi.NFVGroup_update(str(body['name']))
+            except :
+                return {"error" : MUL_NBAPI_ERROR}
+        else :
+            return {"error" : nfv_uuid}
+        return {"nfv_uuid":nfv_uuid}
     
     def delete_nfvgroup(self, conf, name):
-        return self.mongo_db_delete_func(self, self.db_collection['NFVGroupMgr']['name'], name)
+        body = self.mongo_db_delete_func(self, self.db_collection['NFVGroupMgr']['name'], name)
+        if body :
+            try:
+                mul_nbapi.NFVGroup_remove(str(body['name']))
+            except:
+                return {"error" : MUL_NBAPI_ERROR}
+        else :
+            return {"error" : body}
+        return {"SUCCESS"} 
     
     def show_nfvgroup(self, conf, name):
         return self.mongo_db_show_func(self.db_collection['NFVGroupMgr']['name'], name)
