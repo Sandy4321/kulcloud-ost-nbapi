@@ -698,6 +698,11 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
     def show_nfvtopo(self, conf, name):
         return self.mongo_db_show_func(self.db_collection['NFVTopologyMgr']['name'], name)
     
+    def resync_nfvtopo(self, conf):
+        # TODO: 
+        # Extract nfvtopo info from makdi        
+        # if old != new : update db
+        pass
         
     # TODO: NFVGroupManager API    
     def index_nfvgroup(self, conf):        
@@ -738,7 +743,9 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
     
     def show_nfvgroup(self, conf, name):
         return self.mongo_db_show_func(self.db_collection['NFVGroupMgr']['name'], name)
-   
+    
+    def resync_nfvgroup(self, conf):
+        pass   
    
     # TODO: ServiceChainManager API 
     def index_servicech(self, conf):        
@@ -780,6 +787,8 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
     def show_servicech(self, conf, name):
         return self.mongo_db_show_func(self.db_collection['ServiceChainMgr']['name'], name)  
     
+    def resync_servicech(self, conf):
+        pass
     
     # TODO: ServiceChainDefaultRuleManager API    
     def index_servicechaindefaultrule(self, conf):        
@@ -820,6 +829,9 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
     
     def show_servicechaindefaultrule(self, conf, name):
         return self.mongo_db_show_func(self.db_collection['ServiceChainDefaultRuleMgr']['name'], name)    
+    
+    def resync_servicechaindefaultrule(self, conf):
+        pass
     
     # TODO: TopologyManager API    
     def index_topology(self, conf):        
@@ -875,4 +887,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         return {"SUCCESS"} 
     
     def show_service(self, conf, name):
-        return self.mongo_db_show_func(self.db_collection['ServiceMgr']['name'], name)    
+        return self.mongo_db_show_func(self.db_collection['ServiceMgr']['name'], name)
+    
+    def resync_service(self, conf):
+        pass    
