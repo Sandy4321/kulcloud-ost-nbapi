@@ -233,13 +233,13 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         ServiceChainDefaultRuleMgr_package = __import__('kulcloud.api.v1')
         ServiceChainDefaultRuleMgr_module = getattr(ServiceChainDefaultRuleMgr_package, 'ServiceChainDefaultRuleManager')
         ServiceChainDefaultRuleMgr_validator = getattr(ServiceChainDefaultRuleMgr_module, 'input_validation')      
-        
+       
            
         self.db_collection['NFVGroupMgr']={'name':'NFVGroupMgr', 'keys':['name'], 'validator':None}
         self.db_collection['NFVTopologyMgr']={'name':'NFVTopologyMgr', 'keys':['dpid','in_port','out_port','name'], 'validator':NFVTopologyMgr_validator}
         self.db_collection['ServiceChainDefaultRuleMgr']={'name':'ServiceChainDefaultRuleMgr', 'keys':['service_id', 'service_level'], 'validator':ServiceChainDefaultRuleMgr_validator}
         self.db_collection['ServiceChainMgr']={'name':'ServiceChainMgr', 'keys':['ip','service_id'], 'validator':ServiceChainMgr_validator}
-        self.db_collection['ServiceMgr']={'name':'ServiceMgr', 'keys':['name', 'dpid', 'in_port', 'out_port'], 'validator':None}
+        self.db_collection['ServiceMgr']={'name':'ServiceMgr', 'keys':['name', 'vlan'], 'validator':None}
         self.db_collection['UserMgr']={'name':'UserMgr', 'keys':['mdn', 'ip'], 'validator':None}
         
         
@@ -662,8 +662,8 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         nfv_uuid = self.mongo_db_create_func(self, self.db_collection['NFVTopologyMgr']['name'], body) 
         if nfv_uuid :
             try:
-                mul_nbapi.NFVTopology_node_insert(body['group_id'], int(body['dpid'],0), int(body['in_port']),
-                                              int(body['out_port']), str(body['name']), 0)
+                mul_nbapi.NFVTopology_node_insert(str(body['group_id']), str(body['dpid']), int(body['in_port']),
+                                              int(body['out_port']), str(body['name']))
             except :
                 return {"error" : self.err.MUL_NBAPI_ERROR()}
         else :
@@ -674,8 +674,8 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         nfv_uuid = self.mongo_db_update_func(self, self.db_collection['NFVTopologyMgr']['name'], name, body)
         if nfv_uuid :
             try:
-                mul_nbapi.NFVTopology_node_update(body['group_id'], int(body['dpid'],0), int(body['in_port']),
-                                              int(body['out_port']), str(body['name']), 0)
+                mul_nbapi.NFVTopology_node_update(str(body['group_id']), str(body['dpid']), int(body['in_port']),
+                                              int(body['out_port']), str(body['name']))
             except :
                 return {"error" : self.err.MUL_NBAPI_ERROR()}
         else :
@@ -686,7 +686,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         body = self.mongo_db_delete_func(self, self.db_collection['NFVTopologyMgr']['name'], name)
         if body :
             try:
-                mul_nbapi.NFVTopology_node_remove(int(body['dpid'],0), int(body['in_port']),
+                mul_nbapi.NFVTopology_node_remove(str(body['dpid']), int(body['in_port']),
                                                   int(body['out_port']), str(body['name']))
             except:
                 return {"error" : self.err.MUL_NBAPI_ERROR()}
@@ -698,8 +698,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
     def show_nfvtopo(self, conf, name):
         return self.mongo_db_show_func(self.db_collection['NFVTopologyMgr']['name'], name)
     
-    
-    
+        
     # TODO: NFVGroupManager API    
     def index_nfvgroup(self, conf):        
         return self.mongo_db_index_func(self.db_collection['NFVGroupMgr']['name'])  
@@ -749,7 +748,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         chain_uuid = self.mongo_db_create_func(self, self.db_collection['ServiceChainMgr']['name'], body) 
         if chain_uuid :
             try:
-                mul_nbapi.ServiceChain_insert(int(body['service_id']), int(body['ip']), body['nfv_group_list'])
+                mul_nbapi.ServiceChain_insert(str(body['dpid']), str(body['service_id']), str(body['ip']), body['nfv_group_list'])
             except :
                 return {"error" : self.err.MUL_NBAPI_ERROR()}
         else :
@@ -760,7 +759,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         nfv_uuid = self.mongo_db_update_func(self, self.db_collection['ServiceChainMgr']['name'], name, body)
         if nfv_uuid :
             try:
-                mul_nbapi.ServiceChain_update(str(body['name']))
+                mul_nbapi.ServiceChain_update(str(body['dpid']), str(body['service_id']), str(body['ip']), body['nfv_group_list'])
             except :
                 return {"error" : self.err.MUL_NBAPI_ERROR()}
         else :
@@ -771,7 +770,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         body = self.mongo_db_delete_func(self, self.db_collection['ServiceChainMgr']['name'], name)
         if body :
             try:
-                mul_nbapi.ServiceChain_remove(str(body['name']))
+                mul_nbapi.ServiceChain_insert(str(body['dpid']), str(body['service_id']), str(body['ip']))
             except:
                 return {"error" : self.err.MUL_NBAPI_ERROR()}
         else :
@@ -790,7 +789,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         chaindefault_rule_uuid = self.mongo_db_create_func(self, self.db_collection['ServiceChainDefaultRuleMgr']['name'], body) 
         if chaindefault_rule_uuid :
             try:
-                mul_nbapi.ServiceChainDefaultRule_insert(int(body['service_id']), int(body['service_level']), body['nfv_group_list'])
+                mul_nbapi.ServiceChainDefaultRule_insert(str(body['service_id']), int(body['service_level']), body['nfv_group_list'])
             except :
                 return {"error" : self.err.MUL_NBAPI_ERROR()}
         else :
@@ -801,7 +800,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         chaindefault_rule_uuid = self.mongo_db_update_func(self, self.db_collection['ServiceChainDefaultRuleMgr']['name'], name, body)
         if chaindefault_rule_uuid :
             try:
-                mul_nbapi.ServiceChainDefaultRule_update(int(body['service_id']), int(body['service_level']), body['nfv_group_list'])
+                mul_nbapi.ServiceChainDefaultRule_update(str(body['service_id']), int(body['service_level']), body['nfv_group_list'])
             except :
                 return {"error" : self.err.MUL_NBAPI_ERROR()}
         else :
@@ -812,7 +811,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         body = self.mongo_db_delete_func(self, self.db_collection['ServiceChainDefaultRuleMgr']['name'], name)
         if body :
             try:
-                mul_nbapi.ServiceChainDefaultRule_remove(int(body['service_id']), int(body['service_level']))
+                mul_nbapi.ServiceChainDefaultRule_remove(str(body['service_id']), int(body['service_level']))
             except:
                 return {"error" : self.err.MUL_NBAPI_ERROR()}
         else :
@@ -846,7 +845,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         service_uuid = self.mongo_db_create_func(self, self.db_collection['ServiceMgr']['name'], body) 
         if service_uuid :
             try:
-                mul_nbapi.Service_insert(int(body['dpid'], 0), int(body['in_port']), int(body['out_port']), str(body['name']))
+                mul_nbapi.Service_insert(str(body['name']), int(body['vlan']))
             except :
                 return {"error" : self.err.MUL_NBAPI_ERROR()}
         else :
@@ -857,7 +856,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         service_uuid = self.mongo_db_update_func(self, self.db_collection['ServiceMgr']['name'], name, body)
         if service_uuid :
             try:
-                mul_nbapi.Service_update(int(body['dpid'], 0), int(body['in_port']), int(body['out_port']), str(body['name']))
+                mul_nbapi.Service_update(str(body['name']), int(body['vlan']))
             except :
                 return {"error" : self.err.MUL_NBAPI_ERROR()}
         else :
@@ -868,7 +867,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         body = self.mongo_db_delete_func(self, self.db_collection['ServiceMgr']['name'], name)
         if body :
             try:
-                mul_nbapi.Service_remove(int(body['dpid'], 0), int(body['in_port']), int(body['out_port']), str(body['name']))
+                mul_nbapi.Service_remove(str(body['name']), int(body['vlan']))
             except:
                 return {"error" : self.err.MUL_NBAPI_ERROR()}
         else :

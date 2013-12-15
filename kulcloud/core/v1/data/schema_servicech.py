@@ -26,7 +26,7 @@ class nfv_group_list_t(colander.SequenceSchema):
 class ServiceChainMgr(colander.MappingSchema):
     mdn = colander.SchemaNode(colander.String())  
     ip = colander.SchemaNode(colander.String())
-    service_id = colander.SchemaNode(colander.Int())
+    service_id = colander.SchemaNode(colander.String())
     nfv_group_list = nfv_group_list_t()
     
      

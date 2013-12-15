@@ -19,8 +19,6 @@ import colander
 
 class ServiceMgr(colander.MappingSchema):
     name = colander.SchemaNode(colander.String())  
-    dpid = colander.SchemaNode(colander.String())
-    in_port = colander.SchemaNode(colander.Int())
-    out_port = colander.SchemaNode(colander.Int())
+    vlan = colander.SchemaNode(colander.String())
     
 
