@@ -58,16 +58,16 @@ class Controller(object):
 
     @utils.http_success_code(204)
     @utils.verify_version
-    def delete(self, req, version, phone_num):
+    def delete(self, req, version, dpid, name, ip):
         LOG.debug("[ServiceChain api] Got delete request. Request: %s", req)
-        result = core_api.delete_servicech(self.conf, version, phone_num)
+        result = core_api.delete_servicech(self.conf, version, dpid, name, ip)
         return result
 
     @utils.verify_version
-    def show(self, req, version, phone_num):
+    def show(self, req, version, dpid, name, ip):
         LOG.debug("[ServiceChain api] Got info request. Request: %s", req)
         try:
-            result = core_api.show_servicech(self.conf, version, phone_num)
+            result = core_api.show_servicech(self.conf, version, dpid, name, ip)
         except Exception as e:
             raise webob.exc.HTTPBadRequest(content_type='application_json',body='There is no target switch')
         return result

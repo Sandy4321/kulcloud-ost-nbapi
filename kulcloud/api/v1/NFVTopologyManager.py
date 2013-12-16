@@ -64,7 +64,7 @@ class Controller(object):
     @utils.verify_version
     def delete(self, req, version, name):
         LOG.debug("[NFVTopology api] Got delete request. Request: %s", req)
-        result=core_api.delete_nfvtopo(self.conf, version, name)
+        result=core_api.delete_nfvtopo(self.conf, version,name)
         return result
 
     @utils.http_success_code(202)

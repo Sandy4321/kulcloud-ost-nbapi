@@ -33,8 +33,7 @@ from . import PortManager
 from . import LinkManager
 from . import RouteManager
 from . import PathManager
-from . import SADBManager
-from . import NFVDBManager
+
 
 """ Kulcloud NFV Solution Manager """
 from . import ServiceManager
@@ -68,6 +67,7 @@ class API(wsgi.Router):
 
         version_mapper = mapper.submapper(path_prefix="/{version}")
 
+        """ Kulcloud Core Manager API"""
         Fabric_resource = FabricManager.create_resource(self.conf)
         Tenant_resource = TenantManager.create_resource(self.conf)
         Network_resource = NetworkManager.create_resource(self.conf)
@@ -81,8 +81,6 @@ class API(wsgi.Router):
         Link_resource = LinkManager.create_resource(self.conf)
         Route_resource = RouteManager.create_resource(self.conf)
         Path_resource = PathManager.create_resource(self.conf)       
-        SADB_resource = SADBManager.create_resource(self.conf)
-        NFVDB_resource = NFVDBManager.create_resource(self.conf)
         
         
         """ Kulcloud NFV Solution Manager """
@@ -109,9 +107,7 @@ class API(wsgi.Router):
         
         Host_collection = Network_collection.member.collection('host', 'host',
                 controller=Host_resource, member_prefix="/{host_id}",
-                formatted=False)
-        
-        
+                formatted=False)      
         
         
         """ Flow Table API """
@@ -123,18 +119,19 @@ class API(wsgi.Router):
                 controller=Flow_resource, member_prefix="/{flow_id}",
                 formatted=False)
         
+        
         """ Stat API """
         Stats_collection = version_mapper.collection('stats/switch', 'stats/switch',
                 controller=Stats_resource, member_prefix="/{dpid}",
                 formatted=False)
         Stats_flow_collection = Stats_collection.member.collection('flow', 'flow',
                 controller=Stats_flow_resource, member_prefix="/{flow_id}",
-                formatted=False)
-        
+                formatted=False)        
         Stats_port_collection = Stats_collection.connect('/port/{port_no}',
                 controller=Stats_flow_resource, 
                 action="show_stats_port",
                 conditions={'method' : ["GET"]})   
+        
         
         """ Topology API """
         Topology_collection = version_mapper.collection('topology', 'topology',
@@ -160,41 +157,30 @@ class API(wsgi.Router):
         
         Path_collection = Route_collection.collection('path', 'path',
                 controller=Path_resource, member_prefix="/", formatted=False)
-
-    	Path_collection.connect("/{src_dpid}/{src_port}/{dst_dpid}/{dst_port}",
+        
+        Path_collection.connect("/{src_dpid}/{src_port}/{dst_dpid}/{dst_port}",
 							controller=Path_resource,
 							action="show_route_path",
 							conditions={'method' : ["GET"]})  
-    
-        """ Service Chaining API """
-        ServiceChain_collection = version_mapper.collection('servicech', 'servicech',
-                controller=ServiceChain_resource, member_prefix="/{phone_num}",
-                formatted=False) 
         
-        """ Service API """
-        Service_collection = ServiceChain_collection.member.collection('services', 'services',
-                controller=Service_resource, member_prefix="/{service_type}",
-                formatted=False)   
+        """ Route API """
+        Service_collection = version_mapper.collection('service', 'service',
+                controller=Service_resource , member_prefix="/{name}", formatted=False)
         
-        """ SA-DB API """
-        SADB_collection = version_mapper.collection('SADB', 'SADB',
-                controller=SADB_resource, member_prefix="/{service_type}", formatted=False)       
+        Nfvgroup_collection = version_mapper.collection('nfvgroup', 'nfvgroup',
+                controller=NFVGroup_resource , member_prefix="/{name}", formatted=False)
         
-        """ NFV-DB API """
-        NFVDB_collection = version_mapper.collection('NFVDB', 'NFVDB',
-                controller=NFVDB_resource, member_prefix="/{name}", formatted=False)  
-                
-     
-        """ Kulcloud NFV Solution Manager """
-        Topology_resource = TopologyManager.create_resource(self.conf)
-        ServiceChain_resource = ServiceChainManager.create_resource(self.conf)        
-        Service_resource = ServiceManager.create_resource(self.conf)
-        NFVTopology_resource = NFVTopologyManager.create_resource(self.conf)
-        NFVGroup_resource = NFVGroupManager.create_resource(self.conf)
-        ServiceChainDefaultRule_resource = ServiceChainDefaultRuleManager.create_resource(self.conf)     
+        Servicechain_default_collection = version_mapper.collection('servicechdefault', 'servicechdefault',
+                controller=Service_resource , member_prefix="/{name}", formatted=False)
 
-           
-                
+        Servicechain_collection = version_mapper.collection('servicech', 'servicech',
+                controller=Service_resource , member_prefix="/{dpid}/{name}/{ip}", formatted=False)
+ 
+        Nfvtopology_collection = version_mapper.collection('nfvtopology', 'nfvtopology',
+                controller=Service_resource , 
+                member_prefix="/{name}", formatted=False)
+ 
+         
         """ Synchronization API """
         version_mapper.connect("/servicech/sync",
                             controller=ServiceChain_resource,
@@ -221,133 +207,5 @@ class API(wsgi.Router):
                             action="get_servicechaindefaultrule_sync",
                             conditions={'method' : ["GET"]})   
         
-        
-        
-
-        version_mapper.connect("/NFVDB/mdn/{mdn}",
-                            controller=NFVDB_resource,
-                            action="get_nfvdb_bymdn",
-                            conditions={'method' : ["GET"]})          
-        
-        version_mapper.connect("/NFVDB/group/all",
-                            controller=NFVDB_resource,
-                            action="get_nfvdb_vm",
-                            conditions={'method' : ["GET"]})
-
-        version_mapper.connect("/NFVDB/vm",
-                            controller=NFVDB_resource,
-                            action="create_nfv_vm_db",
-                            conditions={'method' : ["POST"]})          
-
-        version_mapper.connect("/servicech/rule/{service_chain_id}",
-                            controller=ServiceChain_resource,
-                            action="delete_service_chain_list",
-                            conditions={'method' : ["DELETE"]})          
-
-        version_mapper.connect("/servicech/rule/{service_chain_id}",
-                            controller=ServiceChain_resource,
-                            action="show_service_chain_list",
-                            conditions={'method' : ["GET"]})          
-        
-        version_mapper.connect("/servicech/{phone_num}/services/{service_type}",
-                            controller=Service_resource,
-                            action="create_user_service",
-                            conditions={'method' : ["POST"]})          
-
-        version_mapper.connect("/servicech/stats/{service_chain_id}",
-                            controller=ServiceChain_resource,
-                            action="show_stats_by_servicechain",
-                            conditions={'method' : ["GET"]})          
-
-        version_mapper.connect("/SWDB",
-                            controller=Service_resource,
-                            action="show_switch_list",
-                            conditions={'method' : ["GET"]})          
-
-        version_mapper.connect("/SWDB/stats/{dpid}",
-                            controller=Service_resource,
-                            action="show_switch_statistic",
-                            conditions={'method' : ["GET"]})
-
-        version_mapper.connect("/NFVDB/stats/{nfv_name}",
-                            controller=NFVDB_resource,
-                            action="get_nfv_vm_statistic",
-                            conditions={'method' : ["GET"]})
-
-        version_mapper.connect("/NFVDB/stats/group/{nfv_groupname}",
-                            controller=NFVDB_resource,
-                            action="get_nfv_group_statistic",
-                            conditions={'method' : ["GET"]})
-
-        version_mapper.connect("/NFVDB/LB/{nfv_groupname}",
-                            controller=NFVDB_resource,
-                            action="update_nfv_vm_threshold_db",
-                            conditions={'method' : ["POST"]})
-
-        version_mapper.connect("/NFVDB/LB/stats/{nfvid}",
-                            controller=NFVDB_resource,
-                            action="get_nfv_vm_threshold",
-                            conditions={'method' : ["GET"]})
-
-        version_mapper.connect("/NFVDB/stats/{dpid}/{port_num}",
-                            controller=NFVDB_resource,
-                            action="get_stat_port",
-                            conditions={'method':["GET"]})
-
-        """Default Rule Create"""
-        version_mapper.connect("/servicech/default/rule",
-                            controller=ServiceChain_resource,
-                            action="create_default_rule",
-                            conditions={'method' : ["POST"]})
-
-        version_mapper.connect("/servicech/default/rule",
-                            controller=ServiceChain_resource,
-                            action="get_default_rule",
-                            conditions={'method' : ["GET"]})
-
-
-        version_mapper.connect("/servicech/log",
-                            controller=Service_resource,
-                            action="create_service_by_chain_log",
-                            conditions={"method" : ["POST"]})
-
-        version_mapper.connect("/servicech/log/{dpid}/{port}/{ip}",
-                            controller=Service_resource,
-                            action="delete_service_by_chain_log",
-                            conditions={"method" : ["DELETE"]})
-
-        version_mapper.connect("/servicech/legacy",
-                            controller=Service_resource,
-                            action="create_legacy_service",
-                            conditions={"method" : ["POST"]})
-
-        version_mapper.connect("/servicech/sdn",
-                            controller=Service_resource,
-                            action="change_sdn_mode",
-                            conditions={"method" : ["POST"]})
-        
-        version_mapper.connect("/servicech/sdn/mode",
-                            controller=Service_resource,
-                            action="get_current_sdn_mode",
-                            conditions={"method" : ["GET"]})
-
-        version_mapper.connect("/servicech/legacy/chain",
-                            controller=Service_resource,
-                            action="create_service_wrapper",
-                            conditions={"method" : ["POST"]})
-
-        version_mapper.connect("/SADB/test/vm_map",
-                            controller=SADB_resource,
-                            action="get_vm_map",
-                            conditions={"method" : ["GET"]})
-
-        version_mapper.connect("/SADB/test/vm_threshold",
-                            controller=SADB_resource,
-                            action="get_vm_threshold",
-                            conditions={"method" : ["GET"]})
-        
-        
-        
-        # TODO : Define NFVTopologyManager API URI 
 
         super(API, self).__init__(mapper)

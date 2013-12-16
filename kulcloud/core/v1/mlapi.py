@@ -686,8 +686,11 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         body = self.mongo_db_delete_func(self, self.db_collection['NFVTopologyMgr']['name'], name)
         if body :
             try:
-                mul_nbapi.NFVTopology_node_remove(str(body['dpid']), int(body['in_port']),
-                                                  int(body['out_port']), str(body['name']))
+                mul_nbapi.NFVTopology_node_remove(str(body['group_id'], 
+                                                      str(body['dpid'], 
+                                                          int(body['inport'], 
+                                                              int(body['outport'], 
+                                                                  str(body['name'])
             except:
                 return {"error" : self.err.MUL_NBAPI_ERROR()}
         else :
@@ -773,18 +776,18 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
             return {"error" : nfv_uuid}
         return {"nfv_uuid":nfv_uuid}
 
-    def delete_servicech(self, conf, name):
+    def delete_servicech(self, conf, dpid, name, ip):
         body = self.mongo_db_delete_func(self, self.db_collection['ServiceChainMgr']['name'], name)
         if body :
             try:
-                mul_nbapi.ServiceChain_insert(str(body['dpid']), str(body['service_id']), str(body['ip']))
+                mul_nbapi.ServiceChain_remove(dpid, name, ip)
             except:
                 return {"error" : self.err.MUL_NBAPI_ERROR()}
         else :
             return {"error" : body}
         return {"SUCCESS"} 
  
-    def show_servicech(self, conf, name):
+    def show_servicech(self, conf, dpid, name, ip):
         return self.mongo_db_show_func(self.db_collection['ServiceChainMgr']['name'], name)  
     
     def resync_servicech(self, conf):
