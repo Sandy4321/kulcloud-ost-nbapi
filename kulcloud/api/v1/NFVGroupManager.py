@@ -76,6 +76,11 @@ class Controller(object):
         params = self.create_schema.deserialize(body)
         result = core_api.update_nfvgroup(self.conf, version, name, params)
         return result
+    
+    def get_nfvgroup_sync(self, req, version):
+        LOG.debug("[NFVGroup api] Makdi synchronization request. Request: %s", req)
+        result = core_api.sync_nfvgroup(self.conf, version)
+        return result    
 
 def create_resource(conf):
     """NFVGroup Manager resource factory method"""

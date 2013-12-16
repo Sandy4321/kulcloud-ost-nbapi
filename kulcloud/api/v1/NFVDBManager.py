@@ -32,7 +32,7 @@ LOG = logging.getLogger(__name__)
 
 class Controller(object):
     def __init__(self, conf):
-        LOG.debug("[ServiceChain api] Creating Service Chain Manager controller with config:"
+        LOG.debug("[NFVDB api] Creating Service Chain Manager controller with config:"
                                                 "loadkulclouds.py %s", conf)
         self.conf = conf
         #self.count = 0
@@ -40,14 +40,14 @@ class Controller(object):
 
     @utils.verify_version
     def index(self, req, version):
-        LOG.debug("[ServiceChain api] Show list of switches. Request: %s", req)
+        LOG.debug("[NFVDB api] Show list of switches. Request: %s", req)
         result = core_api.nfvdb_get_index(self.conf, version)
         return result
 
     @utils.http_success_code(202)
 #    @utils.verify_version_argument
     def create(self, req, version, body):
-        LOG.debug("[ServiceChain api] Got create request. Request: %s", req)
+        LOG.debug("[NFVDB api] Got create request. Request: %s", req)
         #here we need to decide which device should be used
         #params = self.create_schema.deserialize(body)
         LOG.debug("Headers: %s", req.headers)
@@ -59,31 +59,32 @@ class Controller(object):
     @utils.http_success_code(202)
     @utils.verify_version
     def delete(self, req, version, name):
-        LOG.debug("[ServiceChain api] Got delete request. Request: %s", req)
+        LOG.debug("[NFVDB api] Got delete request. Request: %s", req)
         result=core_api.delete_nfvdb(self.conf, version, name)
         return result
 
     @utils.http_success_code(202)
     @utils.verify_version_argument
     def update(self, req, version, name, body):
-        LOG.debug("[ServiceChain api] Got update request. Request: %s", req)
+        LOG.debug("[NFVDB api] Got update request. Request: %s", req)
         params = self.create_schema.deserialize(body)
-        result = core_api.update_nfvdb(self.conf, version, name, params)
+        result = core_api.update_nfvdb(self.conf, version)
         return result
+    
 
     def create_nfv_vm_db(self, req, version, body):
-        LOG.debug("[ServiceChain api] Create NFV VM DB. Request: %s", req)
+        LOG.debug("[NFVDB api] Create NFV VM DB. Request: %s", req)
         result = core_api.create_nfvvmdb(self.conf, version, body)
         return result
 
     def get_nfvdb_bymdn(self, req, version, mdn):
-        LOG.debug("[ServiceChain api] Get NFVDB by MDN. Request: %s", req)
+        LOG.debug("[NFVDB api] Get NFVDB by MDN. Request: %s", req)
         result = core_api.nfvdb_get_index_bymdn(self.conf, version, mdn)
         return result
 
     def get_nfv_vm_statistic(self, req, version, nfv_name):
         #sec = time.time()
-        LOG.debug("[ServiceChain api] Get NFV VM Statistic. Request: %s", req)
+        LOG.debug("[NFVDB api] Get NFV VM Statistic. Request: %s", req)
         result = core_api.get_nfvvmStatistic(self.conf, version, nfv_name)
         #print time.time() - sec
         #print self.count
@@ -91,17 +92,17 @@ class Controller(object):
         return result
 
     def get_nfv_group_statistic(self, req, version, nfv_groupname):
-        LOG.debug("[ServiceChain api] Get NFV Group Statistic. Request: %s", req)
+        LOG.debug("[NFVDB api] Get NFV Group Statistic. Request: %s", req)
         result = core_api.get_nfvGroupStatistic(self.conf, version, nfv_groupname)
         return result
 
     def update_nfv_vm_threshold_db(self, req, version, nfv_groupname, body):
-        LOG.debug("[ServiceChain api] Update NFV VM THRESHOLD DB. Request: %s", req)
+        LOG.debug("[NFVDB api] Update NFV VM THRESHOLD DB. Request: %s", req)
         result = core_api.update_nfvvmThresholddb(self.conf, version, nfv_groupname, body)
         return result
 
     def get_nfv_vm_threshold(self, req, version, nfvid):
-        LOG.debug("[ServiceChain api] Get NFV Threshold. Request: %s", req)
+        LOG.debug("[NFVDB api] Get NFV Threshold. Request: %s", req)
         result = core_api.get_nfv_vm_threshold(self.conf, version, nfvid)
         return result
     
@@ -110,7 +111,7 @@ class Controller(object):
         return result
 
     def get_nfvdb_vm(self, req, version):
-        LOG.debug("[ServiceChain api] Get NFVDB all. Request: %s", req)
+        LOG.debug("[NFVDB api] Get NFVDB all. Request: %s", req)
         result = core_api.nfvdb_get_vm(self.conf, version)
         return result
 

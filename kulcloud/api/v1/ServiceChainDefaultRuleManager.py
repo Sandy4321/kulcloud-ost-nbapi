@@ -79,6 +79,13 @@ class Controller(object):
         result = core_api.update_servicechaindefaultrule(self.conf, version, name, params)
         return result
 
+    def get_servicechaindefaultrule_sync(self, req, version):
+        LOG.debug("[ServiceChainDefaultRuleManagerapi api] Makdi synchronization request. Request: %s", req)
+        result = core_api.sync_servicechaindefaultrule(self.conf, version)
+        return result    
+    
+    
+
 def create_resource(conf):
     """ServiceChainDefaultRuleManager Manager resource factory method"""
     deserializer = wsgi.JSONRequestDeserializer()

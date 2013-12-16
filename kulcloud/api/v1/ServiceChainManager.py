@@ -80,6 +80,11 @@ class Controller(object):
         params = self.create_schema.deserialize(body)
         result = core_api.update_servicech(self.conf, version, phone_num, params)
         return result
+    
+    def get_servicechain_sync(self, req, version):
+        LOG.debug("[ServiceChain api] Makdi synchronization request. Request: %s", req)
+        result = core_api.sync_servicech(self.conf, version)
+        return result    
 
 
 def create_resource(conf):

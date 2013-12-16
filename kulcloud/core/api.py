@@ -617,6 +617,32 @@ def update_nfvdb(conf, version, name, body):
     result = mul_intf[version].update_nfvdb(conf, name, body)
     return result
 
+
+
+def sync_nfvtopology(conf, version):
+    result = mul_intf[version].resync_nfvtopo(conf)
+    return result
+
+def sync_servicech(conf, version):
+    result = mul_intf[version].resync_servicech(conf)
+    return result
+
+def sync_service(conf, version):
+    result = mul_intf[version].resync_service(conf)
+    return result
+
+def sync_nfvgroup(conf, version):
+    result = mul_intf[version].resync_nfvgroup(conf)
+    return result
+
+def sync_servicechaindefaultrule(conf, version):
+    result = mul_intf[version].resync_servicechaindefaultrule(conf)
+    return result
+
+
+
+
+
 def create_nfvvmdb(conf, version, params):
     result = mul_intf[version].create_nfvvmdb(conf, params)
     return result

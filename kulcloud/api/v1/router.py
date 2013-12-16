@@ -183,6 +183,46 @@ class API(wsgi.Router):
         """ NFV-DB API """
         NFVDB_collection = version_mapper.collection('NFVDB', 'NFVDB',
                 controller=NFVDB_resource, member_prefix="/{name}", formatted=False)  
+                
+     
+        """ Kulcloud NFV Solution Manager """
+        Topology_resource = TopologyManager.create_resource(self.conf)
+        ServiceChain_resource = ServiceChainManager.create_resource(self.conf)        
+        Service_resource = ServiceManager.create_resource(self.conf)
+        NFVTopology_resource = NFVTopologyManager.create_resource(self.conf)
+        NFVGroup_resource = NFVGroupManager.create_resource(self.conf)
+        ServiceChainDefaultRule_resource = ServiceChainDefaultRuleManager.create_resource(self.conf)     
+
+           
+                
+        """ Synchronization API """
+        version_mapper.connect("/servicech/sync",
+                            controller=ServiceChain_resource,
+                            action="get_servicechain_sync",
+                            conditions={'method' : ["GET"]})     
+
+        version_mapper.connect("/nfvtopology/sync",
+                            controller=NFVTopology_resource,
+                            action="get_nfvtopology_sync",
+                            conditions={'method' : ["GET"]})
+        
+        version_mapper.connect("/nfvgroup/sync",
+                            controller=NFVGroup_resource,
+                            action="get_nfvgroup_sync",
+                            conditions={'method' : ["GET"]})     
+
+        version_mapper.connect("/service/sync",
+                            controller=Service_resource,
+                            action="get_service_sync",
+                            conditions={'method' : ["GET"]})
+
+        version_mapper.connect("/servicechdefault/sync",
+                            controller=ServiceChainDefaultRule_resource,
+                            action="get_servicechaindefaultrule_sync",
+                            conditions={'method' : ["GET"]})   
+        
+        
+        
 
         version_mapper.connect("/NFVDB/mdn/{mdn}",
                             controller=NFVDB_resource,

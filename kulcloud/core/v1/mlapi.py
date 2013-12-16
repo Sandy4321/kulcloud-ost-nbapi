@@ -701,7 +701,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
     def resync_nfvtopo(self, conf):
         # TODO: 
         # Extract nfvtopo info from makdi        
-        # if old != new : update db
+        # if old != new : update db        
         pass
         
     # TODO: NFVGroupManager API    
