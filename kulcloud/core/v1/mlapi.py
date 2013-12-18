@@ -568,12 +568,9 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         type_pps = 1
         str_dpid = str(dpid)
         port_num = int(port_no)
-        pps = mul_nbapi.get_switch_statistics_port(int(str_dpid, 0), port_num, type_pps)
+        port_stats = mul_nbapi.get_switch_statistics_port((int(str_dpid, 0), port_num))                                                        
 
-        if pps is None:
-            return {"message" : "FAIL", "pps" : 0.0}
-
-        return {"message" : "SUCCESS", "pps" : pps}
+        return {"pps":str(port_stats.pps), "bps":str(port_stats.bps)}
        
     
     def get_stat(self, conf, dpid, flow_id):
