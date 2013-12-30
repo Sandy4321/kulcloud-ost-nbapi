@@ -18,7 +18,6 @@
 import colander
  
 class Switch(colander.MappingSchema):
-    # TODO: Make more intelligent validator    
     peer = colander.SchemaNode(colander.String())
     state = colander.SchemaNode(colander.String(),
                                   validator=colander.OneOf(['home', 'work']))

@@ -18,7 +18,6 @@
 import colander
 
 class SADB(colander.MappingSchema):
-    # TODO: Make more intelligent validator 
     service_type = colander.SchemaNode(colander.String())
     dpid = colander.SchemaNode(colander.String())
     port = colander.SchemaNode(colander.Int(), validator=colander.Range(0,256))

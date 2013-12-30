@@ -20,7 +20,6 @@ from kulcloud.core.v1.data.schema_link import Links as Links
 
 
 class links_list(colander.MappingSchema):
-    # TODO: Make more intelligent validator
     dpid = colander.SchemaNode(colander.String())            
     links=Links()    
     

@@ -25,29 +25,6 @@ mul_intf = {}
 
 
 
-"""
-mul_interface_opts = [
-    # TODO:
-    cfg.StrOpt('servers', default='localhost:8800'),
-    cfg.StrOpt('serverauth', default='username:password'),
-    cfg.BoolOpt('serverssl', default=False),
-    cfg.BoolOpt('syncdata', default=False),
-    cfg.IntOpt('servertimeout', default=10),
-]
-
-cfg.CONF.register_opts(mul_interface_opts, "MUL_NBAPI")
-
-
-class Mul_interface(object):
-    def __init__(self, args):
-        LOG.debug("Initializing the Mul_interface  % : " % args)
-        services = cfg.CONF.MUL_NBAPI.services
-"""
-
-
-        
-
-
 def make_client():
 	"""
     version_map = {'1.0':'kulcloud.core.v1.mlapi.mlapi'}

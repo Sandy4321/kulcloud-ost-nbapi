@@ -31,7 +31,6 @@ from kulcloud.core.v1.data.schema_nfvtopology import NFVTopologyMgr as NFVTopolo
 LOG = logging.getLogger(__name__)
 
 class Controller(object):
-    # TODO: NFVTopologyMgr Controller define
     def __init__(self, conf):
         LOG.debug("[NFVToplogy api] NFVToplogy Manager controller with config:"
                                                 "loadkulclouds.py %s", conf)

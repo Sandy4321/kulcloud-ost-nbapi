@@ -19,7 +19,6 @@ import colander
 from kulcloud.core.v1.data.schema_switch import Switch as Switch
  
 class Switches(colander.SequenceSchema):
-    # TODO: Make more intelligent validator
     switch=Switch()
     
     

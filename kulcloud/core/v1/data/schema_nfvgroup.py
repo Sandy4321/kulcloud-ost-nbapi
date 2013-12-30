@@ -18,7 +18,6 @@
 import colander
 
 class NFVGroupMgr(colander.MappingSchema):
-    # TODO: NFVGroupMgr schema define
     mdn = colander.SchemaNode(colander.String())  
 
 

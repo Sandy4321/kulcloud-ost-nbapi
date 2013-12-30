@@ -19,7 +19,6 @@ import colander
 from kulcloud.core.v1.data.schema_port import Port as Port
  
 class Ports(colander.SequenceSchema):
-    # TODO: Make more intelligent validator
     port=Port()
     
 

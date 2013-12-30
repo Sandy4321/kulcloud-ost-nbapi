@@ -18,7 +18,6 @@
 import colander
 
 class NFVTopologyMgr(colander.MappingSchema):
-    # TODO: NFVTopologyMgr schema define
     type = colander.SchemaNode(colander.Int)
     name = colander.SchemaNode(colander.String())
     group_id = colander.SchemaNode(colander.Int(), validator=colander.Range(0,256))

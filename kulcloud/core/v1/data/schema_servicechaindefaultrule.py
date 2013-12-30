@@ -25,7 +25,6 @@ class nfv_group_list_t(colander.SequenceSchema):
     nfv_group = nfv_group()
  
 class ServiceChainDefaultRuleMgr(colander.MappingSchema):
-    # TODO: ServiceChainDefaultRuleMgr schema define
     service_id = colander.SchemaNode(colander.Int)
     service_level = colander.SchemaNode(colander.Int())
     nfv_group_list = nfv_group_list_t()

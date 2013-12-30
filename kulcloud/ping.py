@@ -112,7 +112,6 @@ class Ping(object):
             self.own_id = own_id
 
         try:
-            # FIXME: Use destination only for display this line here? see: https://github.com/jedie/python-ping/issues/3
             self.dest_ip = to_ip(self.destination)
         except socket.gaierror as e:
             self.print_unknown_host(e)
@@ -347,7 +346,6 @@ def verbose_ping(hostname, timeout=1000, count=3, packet_size=55):
 
 
 if __name__ == '__main__':
-    # FIXME: Add a real CLI
     if len(sys.argv) == 1:
         print "DEMO"
 

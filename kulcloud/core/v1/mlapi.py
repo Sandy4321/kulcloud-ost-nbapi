@@ -699,12 +699,12 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         return self.mongo_db_show_func(self.db_collection['NFVTopologyMgr']['name'], name)
     
     def resync_nfvtopo(self, conf):
-        # TODO: 
+        # TODO : 2013-12-30 
         # Extract nfvtopo info from makdi        
         # if old != new : update db        
         pass
         
-    # TODO: NFVGroupManager API    
+    # NFVGroupManager API    
     def index_nfvgroup(self, conf):        
         return self.mongo_db_index_func(self.db_collection['NFVGroupMgr']['name'])  
     
@@ -745,9 +745,10 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         return self.mongo_db_show_func(self.db_collection['NFVGroupMgr']['name'], name)
     
     def resync_nfvgroup(self, conf):
+        # TODO : 2013-12-30
         pass   
    
-    # TODO: ServiceChainManager API 
+    # ServiceChainManager API 
     def index_servicech(self, conf):        
         return self.mongo_db_index_func(self.db_collection['ServiceChainMgr']['name'])  
        
@@ -788,9 +789,11 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         return self.mongo_db_show_func(self.db_collection['ServiceChainMgr']['name'], name)  
     
     def resync_servicech(self, conf):
+        # TODO : 2013-12-31
+       
         pass
     
-    # TODO: ServiceChainDefaultRuleManager API    
+    # ServiceChainDefaultRuleManager API    
     def index_servicechaindefaultrule(self, conf):        
         return self.mongo_db_index_func(self.db_collection['ServiceChainDefaultRuleMgr']['name']) 
     
@@ -831,9 +834,9 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         return self.mongo_db_show_func(self.db_collection['ServiceChainDefaultRuleMgr']['name'], name)    
     
     def resync_servicechaindefaultrule(self, conf):
+        # TODO : 2013-12-30
         pass
     
-    # TODO: TopologyManager API    
     def index_topology(self, conf):        
         return 
     
@@ -849,7 +852,7 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
     def show_topology(self, conf, name):
         return
     
-    # TODO: ServiceManager API    
+    # ServiceManager API    
     def index_service(self, conf):        
         return self.mongo_db_index_func(self.db_collection['ServiceMgr']['name']) 
     
@@ -890,4 +893,5 @@ class mlapi(mlapi_base_v1.MlapiBaseV1):
         return self.mongo_db_show_func(self.db_collection['ServiceMgr']['name'], name)
     
     def resync_service(self, conf):
+        # TODO : 2013-12-30
         pass    

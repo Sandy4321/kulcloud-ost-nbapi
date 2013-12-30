@@ -31,7 +31,6 @@ from kulcloud.core.v1.data.schema_servicechaindefaultrule import ServiceChainDef
 LOG = logging.getLogger(__name__)
 
 class Controller(object):
-    # TODO: ServiceChainDefaultRuleManagerMgr Controller define
     def __init__(self, conf):
         LOG.debug("[ServiceChainDefaultRuleManager api] ServiceChainDefaultRuleManager Manager controller with config:"
                                                 "loadkulclouds.py %s", conf)

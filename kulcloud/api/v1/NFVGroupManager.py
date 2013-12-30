@@ -31,7 +31,6 @@ from kulcloud.core.v1.data.schema_nfvgroup import NFVGroupMgr as NFVGroup_schema
 LOG = logging.getLogger(__name__)
 
 class Controller(object):
-    # TODO: NFVGroupMgr Controller define
     def __init__(self, conf):
         LOG.debug("[NFVGroup api] NFVGroup Manager controller with config:"
                                                 "loadkulclouds.py %s", conf)

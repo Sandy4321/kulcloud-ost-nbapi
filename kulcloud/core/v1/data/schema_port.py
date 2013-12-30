@@ -20,7 +20,7 @@ import colander
 
  
 class Port(colander.MappingSchema):
-    # TODO: Make more intelligent validator    
+        
     status = colander.SchemaNode(colander.String(),
                                  validator=colander.OneOf(['home']))
     mac_addr = colander.SchemaNode(colander.String())
